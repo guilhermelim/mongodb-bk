@@ -1,0 +1,25 @@
+{
+  "name": "mongodb-bk",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "ts-node src/index.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@googleapis/docs": "^2.0.1",
+    "dotenv": "^16.3.1",
+    "googleapis": "^118.0.0",
+    "mongodb": "^5.6.0"
+  },
+  "devDependencies": {
+    "@types/mongodb": "^4.0.7",
+    "@types/node": "^20.3.1",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.1.3"
+  }
+}
