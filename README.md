@@ -80,4 +80,4 @@ Contributions are welcome. Please create an issue or submit a PR if you want to 
 
 ## License
 
-This project is licensed under the MIT License.
+This project is licensed under the terms of the [MIT License](LICENSE).
