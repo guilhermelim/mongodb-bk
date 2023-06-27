@@ -1,73 +1,104 @@
-require("dotenv").config();
-import { MongoClient } from "mongodb";
-import googleDrive from "./drive";
-import {
-  deleteExistingCollections,
-  readBackupFile,
-  insertBackupDataToDB,
-  backupCollections,
-} from "./dbHelpers";
+import { GoogleDrive, ListResponse } from "./modules/googleDrive";
+import { MongoDBClient } from "./modules/mongodb";
+import { Config } from "./config";
 
-const MONGODB_URI = process.env.MONGODB_URI || "";
-const DB_NAME = process.env.DB_NAME;
-const FOLDER_ID = process.env.GOOGLE_FOLDER_ID || "";
+/**
+ * MongoDBBackup class provides methods for backing up and restoring MongoDB to Google Drive.
+ */
+export class MongoDBBackup {
+  private googleDrive: GoogleDrive;
+  private mongoDBClient: MongoDBClient;
 
-async function backupDB() {
-  const client = new MongoClient(MONGODB_URI);
-  await client.connect();
-  const db = client.db(DB_NAME);
+  /**
+   * Constructs a new instance of MongoDBBackup.
+   *
+   * @param googleCredentials - Google credentials required for authentication with Google Drive.
+   * @param mongodbURI - MongoDB connection string.
+   * @param googleFolderId - ID of the Google Drive folder to save backups.
+   */
+  constructor(
+    googleCredentials: object,
+    mongodbURI: string,
+    googleFolderId: string
+  ) {
+    Config.init(googleCredentials, mongodbURI, googleFolderId);
+    this.googleDrive = new GoogleDrive(Config.googleCredentials);
+    this.mongoDBClient = new MongoDBClient(Config.mongodbURI);
+  }
 
-  const backupData = await backupCollections(db);
+  /**
+   * Creates a backup of the MongoDB and saves it on Google Drive.
+   *
+   * @param fileName - The name of the backup file. If not provided, a default name will be used.
+   * @returns A promise that resolves to the ID of the backup file on Google Drive.
+   */
+  public async backup(fileName?: string): Promise<string | null> {
+    const backupData = await this.mongoDBClient.getBackupData();
 
-  try {
-    const data = await googleDrive.create(
-      `backup-${new Date().toISOString()}.json`,
+    const defaultFileName = `${new Date().toISOString()}-backup.json`;
+    let backupFileName = fileName || defaultFileName;
+
+    // Check if the backupFileName has a valid file extension
+    if (!/\.\w+$/.test(backupFileName)) {
+      backupFileName += ".json"; // Add the ".json" extension if not present
+    }
+
+    const driveResponse = await this.googleDrive.create(
+      backupFileName,
       backupData,
-      FOLDER_ID
+      Config.googleFolderId
     );
-    console.log(`Backup completed. File ID: ${data.id}`);
-  } catch (error) {
-    console.error("Error while creating file:", error);
-  } finally {
-    await client.close();
-  }
-}
-
-async function restoreDB(fileId: string, deleteBeforeRestore?: boolean) {
-  const client = new MongoClient(MONGODB_URI);
-  await client.connect();
-  const db = client.db(DB_NAME);
-
-  if (deleteBeforeRestore) {
-    await deleteExistingCollections(db);
+    return driveResponse.id;
   }
 
-  const backupData = await readBackupFile(fileId);
+  /**
+   * Restores MongoDB from a backup on Google Drive.
+   *
+   * @param fileId - ID of the backup file on Google Drive.
+   * @param deleteBeforeRestore - If true, deletes all data in MongoDB before restoring. Default is false.
+   * @returns A promise that resolves to a boolean indicating whether the restore operation was successful.
+   */
+  public async restore(
+    fileId: string,
+    deleteBeforeRestore?: boolean
+  ): Promise<boolean> {
+    const readStreamResponse = await this.googleDrive.read(fileId);
+    const data = await new Promise((resolve, reject) => {
+      const chunks: any[] = [];
+      readStreamResponse.data
+        .on("data", (chunk: any) => chunks.push(chunk))
+        .on("error", reject)
+        .on("end", () => resolve(Buffer.concat(chunks).toString("utf8")));
+    });
 
-  await insertBackupDataToDB(db, backupData);
+    if (typeof data === "string") {
+      const backupData = JSON.parse(data);
+      const restoreResult = await this.mongoDBClient.restore(
+        backupData,
+        deleteBeforeRestore
+      );
+      return restoreResult;
+    } else {
+      throw new Error("Failed to parse data from stream");
+    }
+  }
 
-  console.log(`Database restoration from backup completed.`);
-  await client.close();
+  /**
+   * Lists all files in the Google Drive folder specified during the object creation.
+   *
+   * @returns A promise that resolves to a ListResponse object containing information about all files.
+   */
+  public async listAll(): Promise<ListResponse> {
+    return this.googleDrive.listAll();
+  }
+
+  /**
+   * Deletes a file or folder from Google Drive.
+   *
+   * @param fileOrFolderId - ID of the file or folder to delete.
+   * @returns A promise that resolves to a boolean indicating whether the delete operation was successful.
+   */
+  public async delete(fileOrFolderId: string): Promise<boolean> {
+    return this.googleDrive.delete(fileOrFolderId);
+  }
 }
-
-(async function run() {
-  // Run backup
-  await backupDB();
-  // Run restore
-  // await restoreDB("1518qV9wAjRFuWz3cA6HwKfDW8LMJJoSJ", true).catch(
-  //   console.error
-  // );
-  // Cria backup
-  // await backupDB().catch(console.error);
-  // run delete
-  // const deleteSuccess = await googleDrive.delete(
-  //   "1LAlU5srKhEU9XU2z42EXGVkL697o0eoB"
-  // );
-  // deleteSuccess && console.log("Excluído com sucesso!");
-  // run list files
-  // await googleDrive.listAll().then((data) => {
-  //   if (data.status == 200) {
-  //     console.log(data.files);
-  //   }
-  // });
-})();
