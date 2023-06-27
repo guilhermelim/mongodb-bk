@@ -4,11 +4,19 @@ This tool provides an easy way to backup MongoDB databases and save them to Goog
 
 ## Installation
 
-Install MongoDB Backup as a dependency in your project using npm:
+You can install MongoDB Backup as a dependency in your project using either npm or Yarn.
 
-```bash
-npm install mongodb-bk
-```
+If you're using npm:
+
+   ```bash
+   npm install mongodb-bk
+   ```
+
+Or, if you prefer Yarn:
+
+   ```bash
+   yarn add mongodb-bk
+   ```
 
 ## Features
 
