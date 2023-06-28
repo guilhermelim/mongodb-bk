@@ -68,25 +68,29 @@ const mongodbURI = "<your-mongodb-uri>"; // For example: mongodb+srv://user:pass
 const googleFolderId = "<your-google-drive-folder-id>";
 
 // Create an instance of MongoDBBackup
-const backup = new MongoDBBackup(googleCredentials, mongodbURI, googleFolderId);
+const mongodbBackup = new MongoDBBackup(
+  googleCredentials,
+  mongodbURI,
+  googleFolderId
+);
 
 // Backup your MongoDB database to Google Drive
-backup.backup();
+mongodbBackup.backup();
 
 // Restore your MongoDB database from a backup in Google Drive
-backup.restore("<backup-file-id>");
+mongodbBackup.restore("<backup-file-id>");
 
 // List all files and folders in the Google Drive folder
-backup.list();
+mongodbBackup.list();
 
 // Delete a file or folder from Google Drive
-backup.delete("<file-or-folder-id>");
+mongodbBackup.delete("<file-or-folder-id>");
 
 // Delete all files and optionally folders from Google Drive
-backup.deleteAll();
+mongodbBackup.deleteAll();
 
 // Empty the trash in Google Drive
-backup.emptyTrash();
+mongodbBackup.emptyTrash();
 ```
 
 Please make sure to replace `<path-to-your-credentials.json-file>`, `<your-mongodb-uri>`, `<your-google-drive-folder-id>`, and `<backup-file-id>` with actual values.
