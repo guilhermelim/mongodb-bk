@@ -8,15 +8,15 @@ You can install MongoDB Backup as a dependency in your project using either npm 
 
 If you're using npm:
 
-   ```bash
-   npm install mongodb-bk
-   ```
+```bash
+npm install mongodb-bk
+```
 
 Or, if you prefer Yarn:
 
-   ```bash
-   yarn add mongodb-bk
-   ```
+```bash
+yarn add mongodb-bk
+```
 
 ## Features
 
@@ -75,12 +75,73 @@ backup.backup();
 
 // Restore your MongoDB database from a backup in Google Drive
 backup.restore("<backup-file-id>");
+
+// List all files and folders in the Google Drive folder
+backup.list();
+
+// Delete a file or folder from Google Drive
+backup.delete("<file-or-folder-id>");
+
+// Delete all files and optionally folders from Google Drive
+backup.deleteAll();
+
+// Empty the trash in Google Drive
+backup.emptyTrash();
 ```
 
 Please make sure to replace `<path-to-your-credentials.json-file>`, `<your-mongodb-uri>`, `<your-google-drive-folder-id>`, and `<backup-file-id>` with actual values.
 
 **How to get the Google Drive folder ID?**
 To get your Google Drive folder ID, navigate to the folder in your web browser. The URL will be something like this: `https://drive.google.com/drive/u/0/folders/1j-i25sHPM0wsKrjv2dUgsKl3STbq0qDp`. The Google Drive folder ID is the last part of the URL, after `/folders/`. In this example, the folder ID is `1j-i25sHPM0wsKrjv2dUgsKl3STbq0qDp`.
+
+## API
+
+### `backup(fileName?: string): Promise<string | null>`
+
+Creates a backup of the MongoDB and saves it on Google Drive.
+
+- `fileName` (optional): The name of the backup file. If not provided, a default name will be used.
+
+Returns a promise that resolves to the ID of the backup file on Google Drive.
+
+### `restore(fileId: string, deleteBeforeRestore?: boolean): Promise<boolean>`
+
+Restores MongoDB from a backup on Google Drive.
+
+- `fileId`: ID of the backup file on Google Drive.
+- `deleteBeforeRestore` (optional): If true, deletes all data in MongoDB before restoring. Default is false.
+
+Returns a promise that resolves to a boolean indicating whether the restore operation was successful.
+
+### `list(includeFolders?: boolean): Promise<ListResponse>`
+
+Lists files and optionally folders in Google Drive.
+
+- `includeFolders` (optional): Specifies whether to include folders in the list. Default is false.
+
+Returns a promise that resolves to a `ListResponse` object containing information about the files and folders.
+
+### `delete(fileOrFolderId: string): Promise<boolean>`
+
+Deletes a file or folder from Google Drive.
+
+- `fileOrFolderId`: ID of the file or folder to delete.
+
+Returns a promise that resolves to a boolean indicating whether the delete operation was successful.
+
+### `deleteAll(deleteFolders?: boolean): Promise<boolean>`
+
+Deletes all files and optionally folders from Google Drive.
+
+- `deleteFolders` (optional): Specifies whether to delete folders as well. Default is false.
+
+Returns a promise that resolves to `true` if all files and folders were deleted successfully, and `false` otherwise.
+
+### `emptyTrash(): Promise<boolean>`
+
+Empties the trash in Google Drive, permanently deleting all files and folders.
+
+Returns a promise that resolves to a boolean indicating whether the trash was emptied successfully.
 
 ## Contribution
 

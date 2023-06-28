@@ -86,10 +86,11 @@ export class MongoDBBackup {
   /**
    * Lists all files in the Google Drive folder specified during the object creation.
    *
+   * @param {boolean} [includeFolders] - Optional parameter to specify whether to include folders in the list (default: false).
    * @returns A promise that resolves to a ListResponse object containing information about all files.
    */
-  public async listAll(): Promise<ListResponse> {
-    return this.googleDrive.listAll();
+  public async list(includeFolders?: boolean): Promise<ListResponse> {
+    return this.googleDrive.list(includeFolders);
   }
 
   /**
@@ -100,5 +101,24 @@ export class MongoDBBackup {
    */
   public async delete(fileOrFolderId: string): Promise<boolean> {
     return this.googleDrive.delete(fileOrFolderId);
+  }
+
+  /**
+   * Deletes all files and optionally folders from Google Drive.
+   *
+   * @param {boolean} [deleteFolders] - Optional parameter to specify whether to delete folders as well (default: false).
+   * @returns {Promise<boolean>} - A promise that resolves to `true` if all files and folders were deleted successfully, and `false` otherwise.
+   */
+  public async deleteAll(deleteFolders?: boolean): Promise<boolean> {
+    return this.googleDrive.deleteAll(deleteFolders);
+  }
+
+  /**
+   * Empties the trash in Google Drive, permanently deleting all files and folders.
+   *
+   * @returns {Promise<boolean>} - A promise that resolves to a boolean indicating whether the trash was emptied successfully.
+   */
+  public async emptyTrash(): Promise<boolean> {
+    return this.googleDrive.emptyTrash();
   }
 }

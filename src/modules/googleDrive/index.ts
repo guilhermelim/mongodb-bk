@@ -26,7 +26,7 @@ export interface FileData {
 export interface ListResponse {
   status: number;
   statusText: string;
-  files: FileData[] | null;
+  files: FileData[] | [];
 }
 
 /**
@@ -146,14 +146,46 @@ export class GoogleDrive {
   }
 
   /**
-   * Lists all files and folders in Google Drive.
+   * Deletes all files and optionally folders from Google Drive.
    *
-   * @returns {Promise<ListResponse>} - Returns the list of all files and folders.
+   * @param {boolean} [deleteFolders] - Optional parameter to specify whether to delete folders as well (default: false).
+   * @returns {Promise<boolean>} - A promise that resolves to `true` if all files and folders were deleted successfully, and `false` otherwise.
    */
-  async listAll(): Promise<ListResponse> {
+  async deleteAll(deleteFolders?: boolean): Promise<boolean> {
+    try {
+      const listResponse = await this.list(deleteFolders);
+      const files = listResponse.files;
+
+      if (files && files.length > 0) {
+        for (const file of files) {
+          await this.delete(file.id);
+        }
+      }
+
+      await this.emptyTrash();
+
+      return true;
+    } catch (error) {
+      console.error("Failed to delete all files and folders:", error);
+      return false;
+    }
+  }
+
+  /**
+   * Lists files and optionally folders in Google Drive.
+   *
+   * @param {boolean} [includeFolders] - Optional parameter to specify whether to include folders in the list (default: false).
+   * @returns {Promise<ListResponse>} - A promise that resolves to a ListResponse object containing information about the files and folders.
+   */
+  async list(includeFolders?: boolean): Promise<ListResponse> {
+    const mimeTypeQuery = includeFolders
+      ? ""
+      : "mimeType != 'application/vnd.google-apps.folder' and ";
+
     const res = await this.drive.files.list({
       pageSize: 1000,
       fields: "nextPageToken, files(id, name, mimeType, parents)",
+      q: `${mimeTypeQuery}trashed = false`,
     });
 
     if (res.status === 200) {
@@ -167,7 +199,7 @@ export class GoogleDrive {
       return {
         status: res.status,
         statusText: res.statusText,
-        files: null,
+        files: [],
       };
     }
   }
