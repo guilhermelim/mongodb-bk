@@ -1,4 +1,5 @@
 import { MongoClient, Db, Document } from "mongodb";
+import { BSON } from "bson";
 
 /**
  * MongoDBClient class to handle MongoDB operations.
@@ -78,10 +79,12 @@ export class MongoDBClient {
       let backupData: any = {};
 
       for (const collection of collections) {
-        backupData[collection.name] = await db
-          .collection(collection.name)
-          .find()
-          .toArray();
+        const docs = await db.collection(collection.name).find().toArray();
+
+        // Convert docs to EJSON
+        backupData[collection.name] = docs.map((doc) =>
+          BSON.EJSON.serialize(doc)
+        );
       }
 
       return backupData;
