@@ -116,6 +116,13 @@ export class MongoDBClient {
         await this.deleteExistingCollections(db);
       }
 
+      // Deserialize documents before inserting to DB
+      for (const collection in backupData) {
+        backupData[collection] = backupData[collection].map((doc: any) =>
+          BSON.EJSON.deserialize(doc)
+        );
+      }
+
       await this.insertBackupDataToDB(db, backupData);
 
       return true;
