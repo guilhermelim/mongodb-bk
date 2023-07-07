@@ -1,6 +1,6 @@
 {
   "name": "mongodb-bk",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "A library for backing up and restoring MongoDB to Google Drive",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
