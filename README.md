@@ -43,11 +43,13 @@ After installation, you will need to setup your Google Cloud credentials and Mon
    - The `credentials.json` file will be downloaded
 
 2. Get the ID of the Google Drive folder where the backup files will be created
+
    - To get the ID of the Google Drive folder, go to https://drive.google.com/drive/my-drive
    - Create a folder where the backup files will be stored. For example, 'db-backups'.
    - Access the folder you created. The URL will be something like: `https://drive.google.com/drive/u/0/folders/1j-i25sHPM0wsKrjv2dUgsKl3STbq0qDp`.
    - Now, obtain the folder ID from the URL link. The Google Drive folder ID is the last part of the URL, after `/folders/`. In this example, the folder ID is `1j-i25sHPM0wsKrjv2dUgsKl3STbq0qDp`.
-3. Obtain the MongoDB connection link. It will be something like "mongodb://user:password@localhost:27017/cjr".
+
+3. Obtain the MongoDB connection link. It will be something like `mongodb://user:password@localhost:27017/cjr`.
 
 ## Usage
 
@@ -78,7 +80,7 @@ const mongodbBackup = new MongoDBBackup(
 mongodbBackup.backup();
 
 // Restore your MongoDB database from a backup in Google Drive
-mongodbBackup.restore("<backup-file-id>");
+mongodbBackup.restore("<backup-file-id>", true);
 
 // List all files and folders in the Google Drive folder
 mongodbBackup.list();
