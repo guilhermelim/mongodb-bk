@@ -42,12 +42,12 @@ After installation, you will need to setup your Google Cloud credentials and Mon
    - On the service account page, under "Keys" tab, add a new key and select JSON
    - The `credentials.json` file will be downloaded
 
-2. Create a new `.env` file in the root directory of your project and fill the following details:
-   ```dotenv
-   GOOGLE_CREDENTIALS=<path to your credentials.json file>
-   MONGODB_URI=<Your MongoDB URI>
-   GOOGLE_FOLDER_ID=<Your Google Drive Folder ID>
-   ```
+2. Get the ID of the Google Drive folder where the backup files will be created
+   - To get the ID of the Google Drive folder, go to https://drive.google.com/drive/my-drive
+   - Create a folder where the backup files will be stored. For example, 'db-backups'.
+   - Access the folder you created. The URL will be something like: `https://drive.google.com/drive/u/0/folders/1j-i25sHPM0wsKrjv2dUgsKl3STbq0qDp`.
+   - Now, obtain the folder ID from the URL link. The Google Drive folder ID is the last part of the URL, after `/folders/`. In this example, the folder ID is `1j-i25sHPM0wsKrjv2dUgsKl3STbq0qDp`.
+3. Obtain the MongoDB connection link. It will be something like "mongodb://user:password@localhost:27017/cjr".
 
 ## Usage
 
@@ -94,9 +94,6 @@ mongodbBackup.emptyTrash();
 ```
 
 Please make sure to replace `<path-to-your-credentials.json-file>`, `<your-mongodb-uri>`, `<your-google-drive-folder-id>`, and `<backup-file-id>` with actual values.
-
-**How to get the Google Drive folder ID?**
-To get your Google Drive folder ID, navigate to the folder in your web browser. The URL will be something like this: `https://drive.google.com/drive/u/0/folders/1j-i25sHPM0wsKrjv2dUgsKl3STbq0qDp`. The Google Drive folder ID is the last part of the URL, after `/folders/`. In this example, the folder ID is `1j-i25sHPM0wsKrjv2dUgsKl3STbq0qDp`.
 
 ## API
 
