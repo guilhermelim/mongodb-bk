@@ -39,6 +39,7 @@ After installation, you will need to setup your Google Cloud credentials and Mon
    - Go to APIs & Services > Credentials
    - Click on "+ CREATE CREDENTIALS" and select "Service account"
    - Fill the required information and create the service account
+   - Copy and save the email of your service account, which will be something like **`serviceaccountname@project-id-390507.iam.gserviceaccount.com`**
    - On the service account page, under "Keys" tab, add a new key and select JSON
    - The `credentials.json` file will be downloaded
 
@@ -49,7 +50,15 @@ After installation, you will need to setup your Google Cloud credentials and Mon
    - Access the folder you created. The URL will be something like: `https://drive.google.com/drive/u/0/folders/1j-i25sHPM0wsKrjv2dUgsKl3STbq0qDp`.
    - Now, obtain the folder ID from the URL link. The Google Drive folder ID is the last part of the URL, after `/folders/`. In this example, the folder ID is `1j-i25sHPM0wsKrjv2dUgsKl3STbq0qDp`.
 
-3. Obtain the MongoDB connection link. It will be something like `mongodb://user:password@localhost:27017/cjr`.
+3. Share the folder with the service account email
+
+   - Go to the folder you created for storing backups in Google Drive
+   - Click on the "Share" button
+   - Enter the email address of the service account you created (e.g., `serviceaccountname@project-id-390507.iam.gserviceaccount.com`)
+   - Set the role to "Editor" to grant full access to the folder
+   - For security purposes, it's recommended to set the folder's sharing settings to "Restricted" with access only to specific emails authorized to access the folder.
+
+4. Obtain the MongoDB connection link. It will be something like `mongodb://user:password@localhost:27017/dbname`.
 
 ## Usage
 
