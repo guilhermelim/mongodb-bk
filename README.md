@@ -52,7 +52,7 @@ After installation, you will need to setup your Google Cloud credentials and Mon
 
 3. Share the folder with the service account email
 
-   - Go to the folder you created for storing backups in Google Drive
+   - Go to the folder you created for storing backups in [Google Drive](https://drive.google.com/drive/my-drive)
    - Click on the "Share" button
    - Enter the email address of the service account you created (e.g., `serviceaccountname@project-id-390507.iam.gserviceaccount.com`)
    - Set the role to "Editor" to grant full access to the folder
